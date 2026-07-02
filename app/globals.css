@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === Custom Base Styles === */
+@layer base {
+  html {
+    font-family: 'Calibri', serif;
+    font-size: 16px;
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* Table styling to match your old agenda look */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 5px solid #666;
+    text-align: center;
+    padding: 4px;
+    font-size: 0.9rem;
+  }
+
+  /* Links */
+  a {
+    text-decoration: underline;
+    text-decoration-color: #1e40af;
+    text-underline-offset: 3px;
+    color: #1e40af;
+    font-weight: 500;
+  }
+
+  a:hover {
+    color: #1d4ed8;
+  }
+}
+
+/* === Theme Variables === */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* === Background Overlay === */
+.bg-with-overlay {
+  position: relative;
+  background-image: url("https://www.underconsideration.com/brandnew/archives/jesus_christ_of_latter_day_saints_logo.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.bg-with-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.2);
+  z-index: 0;
+}
+
+.bg-with-overlay > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* === Dotted Divider === */
+.divider {
+  border-bottom: 1px dotted rgba(100, 100, 100, 0.8);
+  margin: 0.5rem 0;
+}
+
+/* === Mobile adjustments === */
+@media (max-width: 640px) {
+  section {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  section div.text-right {
+    margin-top: 0.5rem;
+  }
+
+  a {
+    word-break: break-word;
+  }
+}
+
+/* === Scrollbar Styling === */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(120, 120, 120, 0.4);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Custom dotted line that matches original look */
+.dotted-line {
+  flex: 1;
+  border: none;
+  border-bottom: 1px dotted rgba(60, 60, 60, 0.9);
+  margin: 0 0.5rem;
+  height: 1px;
+  position: relative;
+  top: 0.35em; /* moves dots lower, closer to text baseline */
+}
+
+
+.calendar-cell {
+  border: 1px solid rgba(146, 144, 144, 0.7);
+}
