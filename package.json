@@ -11,7 +11,7 @@
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "marked": "^16.4.1",
-    "next": "15.2.0",
+    "next": "14.2.5",
     "node-fetch": "^3.3.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
