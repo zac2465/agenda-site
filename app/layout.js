@@ -1,8 +1,9 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Lora } from "next/font/google";
 
-const inter = Inter({
+const lora = Lora({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"], // regular → bold for headings
 });
 
 export const metadata = {
@@ -13,10 +14,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={lora.className}>
         {children}
       </body>
     </html>
   );
 }
+
 
