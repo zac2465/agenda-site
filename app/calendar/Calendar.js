@@ -1,7 +1,7 @@
 // app/calendar/Calendar.js
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Calendar({ events }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -11,11 +11,20 @@ export default function Calendar({ events }) {
 
   const today = new Date();
 
+  // Auto-detect screen size on load
+  useEffect(() => {
+    if (window.innerWidth < 640) {
+      setCompact(true);   // phones default to compact
+    } else {
+      setCompact(false);  // desktops default to grid
+    }
+  }, []);
+
   const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
   const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
 
   const daysInMonth = monthEnd.getDate();
-  const startDay = monthStart.getDay(); // 0 = Sunday
+  const startDay = monthStart.getDay();
 
   const prevMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
@@ -98,6 +107,12 @@ export default function Calendar({ events }) {
               today.getMonth() === currentMonth.getMonth() &&
               today.getFullYear() === currentMonth.getFullYear();
 
+            const weekdayShort = new Date(
+              currentMonth.getFullYear(),
+              currentMonth.getMonth(),
+              day
+            ).toLocaleString("default", { weekday: "short" });
+
             return (
               <div
                 key={day}
@@ -106,7 +121,7 @@ export default function Calendar({ events }) {
                 }`}
               >
                 <div className="font-bold text-lg mb-2">
-                  {currentMonth.toLocaleString("default", { month: "long" })} {day}
+                  {weekdayShort}, {currentMonth.toLocaleString("default", { month: "long" })} {day}
                 </div>
 
                 {dayEvents.length === 0 && (
@@ -153,7 +168,7 @@ export default function Calendar({ events }) {
             <div key={d} className="font-semibold text-xs sm:text-sm">{d}</div>
           ))}
 
-          {/* Empty cells before month starts */}
+          {/* Empty cells */}
           {Array.from({ length: startDay }).map((_, i) => (
             <div key={`empty-${i}`} className="border h-40 sm:h-32 md:h-24 bg-gray-50"></div>
           ))}
@@ -168,6 +183,12 @@ export default function Calendar({ events }) {
               today.getMonth() === currentMonth.getMonth() &&
               today.getFullYear() === currentMonth.getFullYear();
 
+            const weekdayShort = new Date(
+              currentMonth.getFullYear(),
+              currentMonth.getMonth(),
+              day
+            ).toLocaleString("default", { weekday: "short" });
+
             return (
               <div
                 key={day}
@@ -175,7 +196,10 @@ export default function Calendar({ events }) {
                   isToday ? "bg-yellow-100 border-yellow-400" : ""
                 }`}
               >
-                <div className="font-bold text-sm sm:text-base">{day}</div>
+                <div className="font-bold text-xs sm:text-base">
+                  <span className="sm:hidden">{weekdayShort} </span>
+                  {day}
+                </div>
 
                 {dayEvents.map((event, i) => (
                   <div
