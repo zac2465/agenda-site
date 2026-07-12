@@ -1,0 +1,158 @@
+// app/calendar/Calendar.js
+"use client";
+
+
+import { useState } from "react";
+
+export default function Calendar({ events }) {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showBirthdays, setShowBirthdays] = useState(true);
+
+
+  const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+  const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+
+  const daysInMonth = monthEnd.getDate();
+  const startDay = monthStart.getDay(); // 0 = Sunday
+
+  const prevMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+  };
+
+  const nextMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+  };
+
+  // Filter events for this month
+  const monthEvents = events.filter(e =>
+    e.date.getMonth() === currentMonth.getMonth() &&
+    e.date.getFullYear() === currentMonth.getFullYear()
+  );
+
+  // Group events by day
+  const eventsByDay = {};
+  monthEvents.forEach(event => {
+    const day = event.date.getDate();
+    if (!eventsByDay[day]) eventsByDay[day] = [];
+    eventsByDay[day].push(event);
+  });
+
+  return (
+    <div className="max-w-4xl mx-auto p-4">
+      {/* Month Header */}
+      <div className="flex justify-between items-center mb-4">
+        <button onClick={prevMonth} className="px-3 py-1 bg-gray-200 rounded">←</button>
+        <h2 className="text-2xl font-semibold">
+          {currentMonth.toLocaleString("default", { month: "long" })} {currentMonth.getFullYear()}
+        </h2>
+        <button onClick={nextMonth} className="px-3 py-1 bg-gray-200 rounded">→</button>
+      </div>
+
+        {/* Controls */}
+    <div className="flex justify-between items-center mb-4">
+    <button
+        onClick={() => setShowBirthdays(!showBirthdays)}
+        className="px-4 py-2 bg-gray-200 rounded"
+    >
+        {showBirthdays ? "Hide Birthdays" : "Show Birthdays"}
+    </button>
+
+    <a
+        href="/"
+        className="px-4 py-2 bg-blue-600 text-white rounded"
+    >
+        Back to Home
+    </a>
+    </div>
+
+
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
+          <div key={d} className="font-semibold text-xs sm:text-sm">{d}</div>
+        ))}
+
+        {/* Empty cells before month starts */}
+        {Array.from({ length: startDay }).map((_, i) => (
+          <div key={`empty-${i}`} className="border h-24 bg-gray-50"></div>
+        ))}
+
+        {/* Days */}
+        {Array.from({ length: daysInMonth }).map((_, dayIndex) => {
+          const day = dayIndex + 1;
+          const dayEvents = eventsByDay[day] || [];
+
+          return (
+            <div key={day} className="border h-32 sm:h-24 p-1 text-left overflow-hidden">
+              <div className="font-bold text-sm sm:text-base">{day}</div>
+
+              {dayEvents.map((event, i) => (
+                <div
+                    key={i}
+                    onClick={() => setSelectedEvent(event)}
+                    className={`cursor-pointer mt-1 truncate ${
+                        event.type === "Birthday" && !showBirthdays
+                        ? "hidden"
+                        : event.type === "Birthday"
+                            ? "text-xs text-blue-600 font-normal"
+                            : "text-xs sm:text-sm font-medium"
+                    }`}
+                    >
+
+                  {/* Multi-audience color dots */}
+                  <span className="inline-flex mr-1">
+                    {event.colors.map((c, idx) => (
+                      <span
+                        key={idx}
+                        className="w-2 h-2 rounded-full inline-block mr-1"
+                        style={{ backgroundColor: c }}
+                      ></span>
+                    ))}
+                  </span>
+
+                  {/* Minimal emoji */}
+                  {event.icon && <span className="mr-1">{event.icon}</span>}
+
+                  {event.title}
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Event Modal */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="bg-white p-4 sm:p-6 rounded shadow-lg max-w-md w-full mx-2">
+            <h3 className="text-xl font-semibold mb-2">{selectedEvent.title}</h3>
+
+            {selectedEvent.time && (
+              <p className="mb-1"><strong>Time:</strong> {selectedEvent.time}</p>
+            )}
+
+            <p className="mb-1"><strong>Type:</strong> {selectedEvent.type}</p>
+
+            <p className="mb-1">
+              <strong>Audience:</strong> {selectedEvent.audience.join(", ")}
+            </p>
+
+            {selectedEvent.notes && (
+              <p className="mt-2 p-2 bg-gray-100 rounded">
+                {selectedEvent.notes}
+              </p>
+            )}
+
+            <button
+              onClick={() => setSelectedEvent(null)}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -3,7 +3,7 @@ export async function GET() {
     const spreadsheetId = "1qZe_O7wK7ZD3xBprskp0ds9Oin0lR3na-xTi4NOQ2K0";
     const apiKey = process.env.GOOGLE_API_KEY;
 
-    const [agendaRes, announcementsRes, birthdaysRes] = await Promise.all([
+    const [agendaRes, announcementsRes, birthdaysRes, calendarRes] = await Promise.all([
       fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/agenda!A1:Z500?key=${apiKey}`
       ),
@@ -14,26 +14,29 @@ export async function GET() {
         `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/birthday!A1:B500?key=${apiKey}`
       ),
       fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Calendar!A1:E500?key=${apiKey}`
+        `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Calendar!A1:F500?key=${apiKey}`
       ),
     ]);
 
-    const [agendaData, announcementsData, birthdaysData] = await Promise.all([
+    const [agendaData, announcementsData, birthdaysData, calendarData] = await Promise.all([
       agendaRes.json(),
       announcementsRes.json(),
       birthdaysRes.json(),
+      calendarRes.json(),
     ]);
 
     // DEBUGGING: Log what we got back from Google Sheets
-    console.log("Agenda rows:", agendaData.values?.length);
-    console.log("Announcements rows:", announcementsData.values?.length);
-    console.log("Birthdays rows:", birthdaysData.values?.length);
+    //console.log("Agenda rows:", agendaData.values?.length);
+    //console.log("Announcements rows:", announcementsData.values?.length);
+    //console.log("Birthdays rows:", birthdaysData.values?.length);
+    //console.log("Calendar rows:", calendarData.values?.length);
 
     return new Response(
       JSON.stringify({
         agenda: agendaData.values || [],
         announcements: announcementsData.values || [],
         birthdays: birthdaysData.values || [],
+        calendar: calendarData.values || [],
       }),
       {
         headers: { "Content-Type": "application/json" },

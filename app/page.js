@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { hymns } from "./lib/hymns";
 import { marked } from "marked";
+//import { parseBirthdays, parseEvents, mergeCalendarData } from "../lib/eventParser";
+
 
 export default function AgendaPage() {
   const [agenda, setAgenda] = useState(null);
@@ -327,14 +329,15 @@ export default function AgendaPage() {
         {renderBirthdayCalendar()}
       </section>
 
-{/*ward calendar button
+  ward calendar button
         <a
           href="/calendar"
           className="inline-block mt-6 mb-4 bg-blue-100 text-blue-800 px-6 py-2 rounded-lg border border-blue-300 hover:bg-blue-200 hover:text-blue-900 transition duration-200"
         >
           View Ward Calendar
         </a>
-        */}
+
+        
       
     </main>
   );
