@@ -1,7 +1,7 @@
 // app/calendar/Calendar.js
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Calendar({ events }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -10,6 +10,7 @@ export default function Calendar({ events }) {
   const [compact, setCompact] = useState(false);
 
   const today = new Date();
+  const todayRef = useRef(null);
 
   // Auto-detect screen size on load
   useEffect(() => {
@@ -19,6 +20,13 @@ export default function Calendar({ events }) {
       setCompact(false);  // desktops default to grid
     }
   }, []);
+
+  // Auto-scroll to today when compact mode loads
+  useEffect(() => {
+    if (compact && todayRef.current) {
+      todayRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [compact]);
 
   const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
   const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
@@ -36,6 +44,10 @@ export default function Calendar({ events }) {
 
   const jumpToToday = () => {
     setCurrentMonth(new Date());
+    setCompact(true);
+    setTimeout(() => {
+      todayRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
   };
 
   // Filter events for this month
@@ -55,49 +67,54 @@ export default function Calendar({ events }) {
   return (
     <div className="max-w-4xl mx-auto p-4">
 
-      {/* Month Header */}
-      <div className="flex justify-between items-center mb-4">
-        <button onClick={prevMonth} className="px-3 py-1 bg-gray-200 rounded">←</button>
-        <h2 className="text-2xl font-semibold">
-          {currentMonth.toLocaleString("default", { month: "long" })} {currentMonth.getFullYear()}
-        </h2>
-        <button onClick={nextMonth} className="px-3 py-1 bg-gray-200 rounded">→</button>
-      </div>
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-sm pb-2">
 
-      {/* Controls */}
-      <div className="flex flex-wrap gap-2 justify-between items-center mb-4">
-        <button
-          onClick={() => setShowBirthdays(!showBirthdays)}
-          className="px-4 py-2 bg-gray-200 rounded"
-        >
-          {showBirthdays ? "Hide Birthdays" : "Show Birthdays"}
-        </button>
-
-        <button
-          onClick={() => setCompact(!compact)}
-          className="px-4 py-2 bg-gray-200 rounded"
-        >
-          {compact ? "Grid Mode" : "Compact Mode"}
-        </button>
-
-        <button
-          onClick={jumpToToday}
-          className="px-4 py-2 bg-green-600 text-white rounded"
-        >
-          Today
-        </button>
-
+        {/* Home Button */}
         <a
           href="/"
-          className="px-4 py-2 bg-blue-600 text-white rounded"
+          className="px-4 py-2 bg-blue-600 text-white rounded mb-3 inline-block"
         >
-          Home
+          Back to Sacrament Agenda
         </a>
+
+        {/* Month Header */}
+        <div className="flex justify-between items-center mb-2">
+          <button onClick={prevMonth} className="px-3 py-1 bg-gray-200 rounded">←</button>
+          <h2 className="text-2xl font-semibold">
+            {currentMonth.toLocaleString("default", { month: "long" })} {currentMonth.getFullYear()}
+          </h2>
+          <button onClick={nextMonth} className="px-3 py-1 bg-gray-200 rounded">→</button>
+        </div>
+
+        {/* Controls */}
+        <div className="flex flex-wrap gap-2 justify-between items-center">
+          <button
+            onClick={() => setShowBirthdays(!showBirthdays)}
+            className="px-4 py-2 bg-gray-200 rounded"
+          >
+            {showBirthdays ? "Hide Birthdays" : "Show Birthdays"}
+          </button>
+
+          <button
+            onClick={() => setCompact(!compact)}
+            className="px-4 py-2 bg-gray-200 rounded"
+          >
+            {compact ? "Grid Mode" : "Compact Mode"}
+          </button>
+
+          <button
+            onClick={jumpToToday}
+            className="px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Today
+          </button>
+        </div>
       </div>
 
       {/* COMPACT MODE */}
       {compact && (
-        <div className="space-y-4">
+        <div className="space-y-4 mt-4">
           {Array.from({ length: daysInMonth }).map((_, dayIndex) => {
             const day = dayIndex + 1;
             const dayEvents = eventsByDay[day] || [];
@@ -116,6 +133,7 @@ export default function Calendar({ events }) {
             return (
               <div
                 key={day}
+                ref={isToday ? todayRef : null}
                 className={`border p-3 rounded ${
                   isToday ? "bg-yellow-100 border-yellow-400" : "bg-white"
                 }`}
@@ -163,7 +181,7 @@ export default function Calendar({ events }) {
 
       {/* GRID MODE */}
       {!compact && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-1 sm:gap-2 text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-1 sm:gap-2 text-center mt-4">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
             <div key={d} className="font-semibold text-xs sm:text-sm">{d}</div>
           ))}
@@ -192,6 +210,7 @@ export default function Calendar({ events }) {
             return (
               <div
                 key={day}
+                ref={isToday ? todayRef : null}
                 className={`border h-40 sm:h-32 md:h-24 p-1 text-left overflow-auto ${
                   isToday ? "bg-yellow-100 border-yellow-400" : ""
                 }`}
