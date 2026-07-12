@@ -1,14 +1,15 @@
 // app/calendar/Calendar.js
 "use client";
 
-
 import { useState } from "react";
 
 export default function Calendar({ events }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showBirthdays, setShowBirthdays] = useState(true);
+  const [compact, setCompact] = useState(false);
 
+  const today = new Date();
 
   const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
   const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
@@ -22,6 +23,10 @@ export default function Calendar({ events }) {
 
   const nextMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+  };
+
+  const jumpToToday = () => {
+    setCurrentMonth(new Date());
   };
 
   // Filter events for this month
@@ -40,6 +45,7 @@ export default function Calendar({ events }) {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+
       {/* Month Header */}
       <div className="flex justify-between items-center mb-4">
         <button onClick={prevMonth} className="px-3 py-1 bg-gray-200 rounded">←</button>
@@ -49,78 +55,160 @@ export default function Calendar({ events }) {
         <button onClick={nextMonth} className="px-3 py-1 bg-gray-200 rounded">→</button>
       </div>
 
-        {/* Controls */}
-    <div className="flex justify-between items-center mb-4">
-    <button
-        onClick={() => setShowBirthdays(!showBirthdays)}
-        className="px-4 py-2 bg-gray-200 rounded"
-    >
-        {showBirthdays ? "Hide Birthdays" : "Show Birthdays"}
-    </button>
+      {/* Controls */}
+      <div className="flex flex-wrap gap-2 justify-between items-center mb-4">
+        <button
+          onClick={() => setShowBirthdays(!showBirthdays)}
+          className="px-4 py-2 bg-gray-200 rounded"
+        >
+          {showBirthdays ? "Hide Birthdays" : "Show Birthdays"}
+        </button>
 
-    <a
-        href="/"
-        className="px-4 py-2 bg-blue-600 text-white rounded"
-    >
-        Back to Home
-    </a>
-    </div>
+        <button
+          onClick={() => setCompact(!compact)}
+          className="px-4 py-2 bg-gray-200 rounded"
+        >
+          {compact ? "Grid Mode" : "Compact Mode"}
+        </button>
 
+        <button
+          onClick={jumpToToday}
+          className="px-4 py-2 bg-green-600 text-white rounded"
+        >
+          Today
+        </button>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
-          <div key={d} className="font-semibold text-xs sm:text-sm">{d}</div>
-        ))}
+        <a
+          href="/"
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          Home
+        </a>
+      </div>
 
-        {/* Empty cells before month starts */}
-        {Array.from({ length: startDay }).map((_, i) => (
-          <div key={`empty-${i}`} className="border h-24 bg-gray-50"></div>
-        ))}
+      {/* COMPACT MODE */}
+      {compact && (
+        <div className="space-y-4">
+          {Array.from({ length: daysInMonth }).map((_, dayIndex) => {
+            const day = dayIndex + 1;
+            const dayEvents = eventsByDay[day] || [];
 
-        {/* Days */}
-        {Array.from({ length: daysInMonth }).map((_, dayIndex) => {
-          const day = dayIndex + 1;
-          const dayEvents = eventsByDay[day] || [];
+            const isToday =
+              today.getDate() === day &&
+              today.getMonth() === currentMonth.getMonth() &&
+              today.getFullYear() === currentMonth.getFullYear();
 
-          return (
-            <div key={day} className="border h-32 sm:h-24 p-1 text-left overflow-hidden">
-              <div className="font-bold text-sm sm:text-base">{day}</div>
+            return (
+              <div
+                key={day}
+                className={`border p-3 rounded ${
+                  isToday ? "bg-yellow-100 border-yellow-400" : "bg-white"
+                }`}
+              >
+                <div className="font-bold text-lg mb-2">
+                  {currentMonth.toLocaleString("default", { month: "long" })} {day}
+                </div>
 
-              {dayEvents.map((event, i) => (
-                <div
+                {dayEvents.length === 0 && (
+                  <div className="text-gray-500 text-sm">No events</div>
+                )}
+
+                {dayEvents.map((event, i) => (
+                  <div
                     key={i}
                     onClick={() => setSelectedEvent(event)}
-                    className={`cursor-pointer mt-1 truncate ${
-                        event.type === "Birthday" && !showBirthdays
+                    className={`cursor-pointer whitespace-normal break-words mb-2 ${
+                      event.type === "Birthday" && !showBirthdays
                         ? "hidden"
                         : event.type === "Birthday"
-                            ? "text-xs text-blue-600 font-normal"
-                            : "text-xs sm:text-sm font-medium"
+                          ? "text-blue-600"
+                          : "font-medium"
                     }`}
-                    >
+                  >
+                    <span className="inline-flex mr-1">
+                      {event.colors.map((c, idx) => (
+                        <span
+                          key={idx}
+                          className="w-2 h-2 rounded-full inline-block mr-1"
+                          style={{ backgroundColor: c }}
+                        ></span>
+                      ))}
+                    </span>
 
-                  {/* Multi-audience color dots */}
-                  <span className="inline-flex mr-1">
-                    {event.colors.map((c, idx) => (
-                      <span
-                        key={idx}
-                        className="w-2 h-2 rounded-full inline-block mr-1"
-                        style={{ backgroundColor: c }}
-                      ></span>
-                    ))}
-                  </span>
+                    {event.icon && <span className="mr-1">{event.icon}</span>}
 
-                  {/* Minimal emoji */}
-                  {event.icon && <span className="mr-1">{event.icon}</span>}
+                    {event.title}
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-                  {event.title}
-                </div>
-              ))}
-            </div>
-          );
-        })}
-      </div>
+      {/* GRID MODE */}
+      {!compact && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-1 sm:gap-2 text-center">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
+            <div key={d} className="font-semibold text-xs sm:text-sm">{d}</div>
+          ))}
+
+          {/* Empty cells before month starts */}
+          {Array.from({ length: startDay }).map((_, i) => (
+            <div key={`empty-${i}`} className="border h-40 sm:h-32 md:h-24 bg-gray-50"></div>
+          ))}
+
+          {/* Days */}
+          {Array.from({ length: daysInMonth }).map((_, dayIndex) => {
+            const day = dayIndex + 1;
+            const dayEvents = eventsByDay[day] || [];
+
+            const isToday =
+              today.getDate() === day &&
+              today.getMonth() === currentMonth.getMonth() &&
+              today.getFullYear() === currentMonth.getFullYear();
+
+            return (
+              <div
+                key={day}
+                className={`border h-40 sm:h-32 md:h-24 p-1 text-left overflow-auto ${
+                  isToday ? "bg-yellow-100 border-yellow-400" : ""
+                }`}
+              >
+                <div className="font-bold text-sm sm:text-base">{day}</div>
+
+                {dayEvents.map((event, i) => (
+                  <div
+                    key={i}
+                    onClick={() => setSelectedEvent(event)}
+                    className={`cursor-pointer mt-1 whitespace-normal break-words ${
+                      event.type === "Birthday" && !showBirthdays
+                        ? "hidden"
+                        : event.type === "Birthday"
+                          ? "text-xs sm:text-sm text-blue-600 font-normal"
+                          : "text-xs sm:text-sm md:text-base font-medium"
+                    }`}
+                  >
+                    <span className="inline-flex mr-1">
+                      {event.colors.map((c, idx) => (
+                        <span
+                          key={idx}
+                          className="w-2 h-2 rounded-full inline-block mr-1"
+                          style={{ backgroundColor: c }}
+                        ></span>
+                      ))}
+                    </span>
+
+                    {event.icon && <span className="mr-1">{event.icon}</span>}
+
+                    {event.title}
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Event Modal */}
       {selectedEvent && (

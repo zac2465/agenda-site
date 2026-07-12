@@ -324,10 +324,6 @@ export default function AgendaPage() {
 
 
 
-      <section>
-        <h3 className="text-xl font-semibold mb-2">Birthdays (Scroll to see more)</h3>
-        {renderBirthdayCalendar()}
-      </section>
 
   ward calendar button
         <a
