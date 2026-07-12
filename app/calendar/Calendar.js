@@ -24,7 +24,14 @@ export default function Calendar({ events }) {
   // Auto-scroll to today when compact mode loads
   useEffect(() => {
     if (compact && todayRef.current) {
-      todayRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      const headerOffset = 180;
+      const elementPosition = todayRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
     }
   }, [compact]);
 
@@ -44,9 +51,18 @@ export default function Calendar({ events }) {
 
   const jumpToToday = () => {
     setCurrentMonth(new Date());
-    setCompact(true);
+
     setTimeout(() => {
-      todayRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (compact && todayRef.current) {
+        const headerOffset = 180;
+        const elementPosition = todayRef.current.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      }
     }, 50);
   };
 
