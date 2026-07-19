@@ -25,12 +25,13 @@ export async function GET() {
       calendarRes.json(),
     ]);
 
-    // DEBUGGING: Log what we got back from Google Sheets
-    //console.log("Agenda rows:", agendaData.values?.length);
-    //console.log("Announcements rows:", announcementsData.values?.length);
-    //console.log("Birthdays rows:", birthdaysData.values?.length);
-    //console.log("Calendar rows:", calendarData.values?.length);
+    // DEBUGGING
+    console.log("Agenda rows:", agendaData.values?.length);
+    console.log("Announcements rows:", announcementsData.values?.length);
+    console.log("Birthdays rows:", birthdaysData.values?.length);
+    console.log("Calendar rows:", calendarData.values?.length);
 
+    // Return JSON with proper caching rules
     return new Response(
       JSON.stringify({
         agenda: agendaData.values || [],
@@ -39,7 +40,16 @@ export async function GET() {
         calendar: calendarData.values || [],
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+
+          // ⭐ Agenda + announcements + birthdays: ALWAYS FRESH
+          "Cache-Control": "no-store, must-revalidate",
+
+          // ⭐ Calendar: cache for 1 hour (3600 seconds)
+          "CDN-Cache-Control": "public, max-age=3600",
+          "Vercel-CDN-Cache-Control": "public, max-age=3600",
+        },
       }
     );
   } catch (err) {

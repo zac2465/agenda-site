@@ -9,22 +9,21 @@ export default function CalendarPage() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-  async function fetchData() {
-    const res = await fetch("/api/agenda", { cache: "no-store" });
-    const data = await res.json();
+    async function fetchData() {
+      const res = await fetch("/api/agenda");
+      const data = await res.json();
 
-    console.log("Calendar data:", data.calendar);
+      //console.log("Calendar data:", data.calendar);
 
-    const birthdays = parseBirthdays(data.birthdays);
-    const parsedEvents = parseEvents(data.calendar);
-    const merged = mergeCalendarData(birthdays, parsedEvents);
+      const birthdays = parseBirthdays(data.birthdays);
+      const parsedEvents = parseEvents(data.calendar);
+      const merged = mergeCalendarData(birthdays, parsedEvents);
 
-    setEvents(merged);
-  }
+      setEvents(merged);
+    }
 
-  fetchData();
-}, []);
-
+    fetchData();
+  }, []);
 
   return <Calendar events={events} />;
 }
