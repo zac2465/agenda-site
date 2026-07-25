@@ -34,13 +34,19 @@ export default function AgendaPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // ⭐ Shift today back 1 day
+  // Saturday becomes Friday
+  // Friday becomes Thursday
+  const effectiveToday = new Date(today);
+  effectiveToday.setDate(today.getDate() - 1);
+
   let thisWeek =
     rows.find(row => {
       const dateCell = row[0];
       if (!dateCell) return false;
       const rowDate = new Date(dateCell);
       rowDate.setHours(0, 0, 0, 0);
-      return rowDate >= today;
+      return rowDate >= effectiveToday;
     }) || rows[rows.length - 1];
 
   const meetingDate = new Date(thisWeek[0]).toLocaleDateString(undefined, {
@@ -48,6 +54,7 @@ export default function AgendaPage() {
     month: "long",
     day: "numeric",
   });
+
 
   // ------------------------------------------------------------
   // ANNOUNCEMENT MATCHING (BY AGENDA DATE)
