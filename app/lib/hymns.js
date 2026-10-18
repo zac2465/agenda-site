@@ -1633,6 +1633,47 @@ export const hymns = {
     title: "Lord, Accept Our Humble Fast",
     url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/lord-accept-our-humble-fast?lang=eng"
   },
+  "1063": {
+    title: "Peace, Peace, Be Still",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/peace-peace-be-still?lang=eng"
+  },
+  "1064": {
+    title: "Great Is Thy Faithfulness",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/great-is-thy-faithfulness?lang=eng"
+  },
+  "1065": {
+    title: "Isaiah Said",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/isaiah-said?lang=eng"
+  },
+  "1066": {
+    title: "Fight the Good Fight",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/fight-the-good-fight?lang=eng"
+  },
+  "1067": {
+    title: "It’s Joyful to Live the Gospel",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/its-joyful-to-live-the-gospel?lang=eng"
+  },
+  "1068": {
+    title: "To God Be the Glory",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/to-god-be-the-glory?lang=eng"
+  },
+  "1069": {
+    title: "Speak to Us, Lord",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/speak-to-us-lord?lang=eng"
+  },
+  "1070": {
+    title: "The Miracle",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/the-miracle?lang=eng"
+  },
+  "1071": {
+    title: "What God Calls Us To",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/what-god-calls-us-to?lang=eng"
+  },
+  "1072": {
+    title: "When I Survey the Wondrous Cross",
+    url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/when-i-survey-the-wondrous-cross?lang=eng"
+  },
+
   "1201": {
     title: "Hail the Day That Sees Him Rise",
     url: "https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/hail-the-day-that-sees-him-rise?lang=eng"
